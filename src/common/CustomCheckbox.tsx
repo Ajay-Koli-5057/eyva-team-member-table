@@ -1,49 +1,46 @@
-import React from 'react';
+import React, { useState } from "react";
 
-const CustomCheckbox = ({ member, selectedMembers, handleSelectMember }: any) => {
-  // Add guard clause to handle undefined or null member
-  if (!member) {
-    return null; // or handle gracefully in your UI
-  }
+const Checkbox = ({ checked, onChange }: any) => {
+  const [hovered, setHovered] = useState(false);
 
-  const isChecked = selectedMembers.includes(member.id);
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
 
   return (
-    <td className="py-1 px-4">
-      <label className="flex items-center">
-        <input
-          type="checkbox"
-          checked={isChecked}
-          onChange={() => handleSelectMember(member.id)}
-          className="hidden"
-        />
-        <div
-          className={`w-5 h-5 flex items-center justify-center rounded-lg transition-colors duration-200 ${
-            isChecked
-              ? 'bg-purple-500 border-2 border-purple-500'
-              : 'bg-white border-2 border-gray-300 hover:border-purple-500'
-          }`}
+    <div
+      className={`relative flex items-center justify-center w-4 h-4 rounded-md border border-gray-400 cursor-pointer transition duration-300 ${
+        checked
+          ? "bg-purple-600 border-purple-600"
+          : hovered
+          ? "bg-purple-200 border-purple-900"
+          : ""
+      }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={onChange}
+    >
+      {checked && (
+        <svg
+          className="w-4 h-4 text-white pointer-events-none"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          {isChecked && (
-            <svg
-              className="w-6 h-6 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          )}
-        </div>
-      </label>
-    </td>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      )}
+    </div>
   );
 };
 
-export default CustomCheckbox;
+export default Checkbox;

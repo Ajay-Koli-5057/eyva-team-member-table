@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+/* CSS */
+.placeholder-option {
+  color: #999; 
+}
+
+.placeholder-option:hover {
+  background-color: #f0f0f0; 
+}
+
+option:checked {
+  background-color: #e6e6ff; 
+  color: #333;
+}
