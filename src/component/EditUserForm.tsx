@@ -24,7 +24,15 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
   onSubmit,
   onCancel,
 }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    getValues,
+  } = useForm({
+    defaultValues: selectedMember || undefined,
+  });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -41,24 +49,20 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
             required: "Name is required",
           })}
         />
-        {errors.name && typeof errors.name.message === 'string' && (
+        {errors.name && typeof errors.name.message === "string" && (
           <span className="text-red-500 text-sm">{errors.name.message}</span>
         )}
       </div>
       <div className="flex flex-col space-y-1 w-full mb-5">
         <CustomSelect
-          selectedOption={selectedMember?.role || ""}
+          selectedOption={getValues("role") || ""}
           onChange={(value) =>
-            onSubmit({
-              ...selectedMember!,
-              role: value,
-            })
+            setValue("role", value, { shouldValidate: true })
           }
-        //   register={register("role", { required: "Role is required" })}
         />
-        {/* {errors.role && (
+        {errors.role && typeof errors.role.message === "string" && (
           <span className="text-red-500 text-sm">{errors.role.message}</span>
-        )} */}
+        )}
       </div>
       <div className="flex flex-col space-y-1 w-full mb-5">
         <div className="text-md font-normal">Email Address</div>
@@ -77,7 +81,7 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
             },
           })}
         />
-        {errors.email && typeof errors.email.message === 'string' && (
+        {errors.email && typeof errors.email.message === "string" && (
           <span className="text-red-500 text-sm">{errors.email.message}</span>
         )}
       </div>
@@ -92,7 +96,6 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
         <button
           type="submit"
           className="px-4 py-2 w-full rounded bg-purple-600 rounded-lg text-white hover:bg-purple-700"
-        //   onClick={onConfirm}
         >
           Confirm
         </button>

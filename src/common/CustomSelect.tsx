@@ -1,10 +1,19 @@
-import React, { useState } from "react";
-import "../App.css"
+import React from "react";
+import "../App.css";
 
 interface CustomSelectProps {
   selectedOption: string;
   onChange: (value: string) => void;
 }
+
+const roles = [
+  "Frontend Developer",
+  "UX Researcher",
+  "Backend Developer",
+  "Data Scientist",
+  "Marketing Manager",
+  "Product Designer",
+];
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
   selectedOption,
@@ -24,9 +33,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           className="p-2 border border-gray-400 rounded-lg w-full hover:border-purple-500 focus:outline-none appearance-none"
         >
           <option value="">Select role</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-          <option value="guest">Guest</option>
+          {roles.map((role) => (
+            <option key={role} value={role}>{role}</option>
+          ))}
         </select>
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
           <svg
