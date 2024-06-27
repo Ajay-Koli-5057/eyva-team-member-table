@@ -203,7 +203,7 @@ const Table: React.FC = () => {
                   />
                 </th>
                 <th
-                  className="py-2 px-4 border-b cursor-pointer"
+                  className="py-2 px-4 border-b cursor-pointer text-left"
                   onClick={() => handleSortChange("name")}
                 >
                   <span className="text-left text-gray-500 font-normal">
