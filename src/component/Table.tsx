@@ -39,29 +39,29 @@ const Table: React.FC = () => {
 
   const fetchData = async () => {
     setLoading(true);
+    let params;
+    if (searchKey) {
+      params = {
+        search: searchKey,
+      };
+    } else {
+      params = {
+        page: currentPage,
+        limit: 10,
+        search: searchKey,
+        sortBy: sortBy,
+        order: sortOrder,
+      };
+    }
 
-    const params: Partial<{
-      page: number;
-      limit: number;
-      search: string | null;
-      sortBy: "name" | "role" | "email" | "teams";
-      order: "asc" | "desc";
-    }> = {
-      page: currentPage,
-      limit: 10,
-      search: searchKey || null,
-      sortBy,
-      order: sortOrder,
-    };
     try {
       const data: any = await fetchTeamMembers(params);
-      setTeamMembersList(data.items);
-      setTotalMemberList(data.count);
+      setTeamMembersList(data?.items);
+      setTotalMemberList(data?.count);
     } catch (error) {
       console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   const handleSortChange = (property: "name" | "role" | "email" | "teams") => {
