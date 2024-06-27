@@ -12,7 +12,7 @@ const roles = [
   "Backend Developer",
   "Data Scientist",
   "Marketing Manager",
-  "Product Designer",
+  "Product Manager",
 ];
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
