@@ -1,9 +1,11 @@
 import axios from 'axios';
 import { TeamMember } from '../types/types';
 
+const API_URL = "https://eyva-team-member-be.vercel.app/api"
+
 export const fetchTeamMembers = async (params: any): Promise<TeamMember[]> => {
   try {
-    const response = await axios.get(`http://192.168.1.27:5000/api/members`, {
+    const response = await axios.get(`${API_URL}/members`, {
       params
     });
     return response?.data as TeamMember[];
@@ -15,7 +17,7 @@ export const fetchTeamMembers = async (params: any): Promise<TeamMember[]> => {
 
 export const updateMemberDetails = async (memberId: number, data: any): Promise<void> => {
   try {
-    const response = await axios.put(`http://192.168.1.27:5000/api/members/${memberId}`, data, {
+    const response = await axios.put(`${API_URL}/members/${memberId}`, data, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -31,7 +33,7 @@ export const updateMemberDetails = async (memberId: number, data: any): Promise<
 
 export const deleteMembers = async (ids: number[]): Promise<void> => {
   try {
-    const response = await axios.delete(`http://192.168.1.27:5000/api/members`, {
+    const response = await axios.delete(`${API_URL}/members`, {
       headers: {
         'Content-Type': 'application/json',
       },
