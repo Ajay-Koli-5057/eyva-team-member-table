@@ -6,7 +6,7 @@ const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
   member,
   selected,
   onSelect,
-  onDelete,
+  onSingleDelete,
   onEdit,
 }) => {
   const handleSelect = () => {
@@ -71,16 +71,16 @@ const TeamMemberRow: React.FC<TeamMemberRowProps> = ({
       </td>
       <td className="py-2 px-1 pr-5 space-x-5">
         <button
-          onClick={() => onDelete()}
-          className="text-red-500 hover:text-red-900"
+          onClick={() => onSingleDelete()}
+          className="text-gray-500 hover:text-purple-800"
         >
-          <i className="fas fa-trash-alt"></i>
+          <i className="fa-regular fa-trash-can"></i>
         </button>
         <button
           onClick={onEdit}
-          className="text-indigo-500 hover:text-indigo-900"
+          className="text-gray-500 hover:text-purple-800"
         >
-          <i className="fas fa-edit"></i>
+          <i className="fa-solid fa-pen"></i>
         </button>
       </td>
     </tr>

@@ -6,7 +6,7 @@ export const fetchTeamMembers = async (params: any): Promise<TeamMember[]> => {
     const response = await axios.get(`http://192.168.1.27:5000/api/members`, {
       params
     });
-    return response.data as TeamMember[];
+    return response?.data as TeamMember[];
   } catch (error) {
     console.error('Error fetching data:', error);
     throw error;
@@ -31,7 +31,7 @@ export const updateMemberDetails = async (memberId: number, data: any): Promise<
 
 export const deleteMembers = async (ids: number[]): Promise<void> => {
   try {
-    const response = await axios.delete('http://192.168.1.27:5000/api/members', {
+    const response = await axios.delete(`http://192.168.1.27:5000/api/members`, {
       headers: {
         'Content-Type': 'application/json',
       },

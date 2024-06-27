@@ -13,6 +13,6 @@ export interface TeamMemberRowProps {
     member: TeamMember;
     selected: boolean;
     onSelect: (id: number) => void;
-    onDelete: () => void;
+    onSingleDelete: () => void;
     onEdit: () => void;
 }

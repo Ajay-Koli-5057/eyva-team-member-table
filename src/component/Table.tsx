@@ -13,13 +13,14 @@ import {
 const Table: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [teamMembersList, setTeamMembersList] = useState<TeamMember[]>([]);
-  const [totlaMemberList, setTotalMemberList] = useState<number>(0);
+  const [totalMemberList, setTotalMemberList] = useState<number>(0);
   const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEditSuccessModal, setShowEditSuccessModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKey, setSearchKey] = useState<any | null>(null);
@@ -62,7 +63,7 @@ const Table: React.FC = () => {
   };
 
   const totalPages =
-    totlaMemberList && Math.ceil(totlaMemberList / itemsPerPage);
+    totalMemberList && Math.ceil(totalMemberList / itemsPerPage);
   const handleSelectMember = (id: number) => {
     setSelectedMembers((prevSelected) =>
       prevSelected.includes(id)
@@ -87,6 +88,10 @@ const Table: React.FC = () => {
     }
   };
 
+  const handlePageSelect = (page: number) => {
+    setCurrentPage(page);
+  };
+
   const handleSelectAll = () => {
     setSelectedMembers(
       selectAll ? [] : teamMembersList?.map((member) => member.id)
@@ -99,7 +104,11 @@ const Table: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const onDelete = (memberId: number | any) => {
+  const onDelete = () => {
+    setShowConfirmModal(true);
+  };
+
+  const onSingleDelete = (memberId: number | any) => {
     setSelectedMembers([memberId]);
     setShowConfirmModal(true);
   };
@@ -112,7 +121,7 @@ const Table: React.FC = () => {
       setTimeout(() => setShowEditSuccessModal(false), 2000);
     } catch (error) {
       console.error("Error updating user details:", error);
-      alert("Error updating user details");
+      setShowErrorModal(true);
       setShowEditModal(false);
     }
   };
@@ -132,7 +141,7 @@ const Table: React.FC = () => {
       console.error("Error deleting members:", error);
       setSelectedMembers([]);
       setShowConfirmModal(false);
-      alert("Error deleting members");
+      setShowErrorModal(true);
     }
   };
 
@@ -143,22 +152,30 @@ const Table: React.FC = () => {
       </div>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Team Members</h2>
+          <h2 className="text-lg font-semibold">
+            Team Members
+            <span
+              className={`bg-purple-100 text-purple-800 py-1 px-3 mx-4 rounded-full text-xs mr-1`}
+            >
+              {`${totalMemberList} users`}
+            </span>
+          </h2>
+
           <div className="flex w-half space-x-5">
             <input
               type="text"
-              className={`p-2 border border-gray-400 rounded-lg  hover:border-purple-500 focus:outline-none`}
-              placeholder="Search by Name..."
+              className={`p-2 border border-gray-400 rounded-lg hover:border-purple-500 focus:outline-none`}
+              placeholder="Search..."
               onChange={(e) => setSearchKey(e.target.value)}
             />
             <button
-              className={`bg-purple-600 text-white px-4 py-2 rounded ${
+              className={`bg-purple-600 rounded-lg text-white px-8 py-2 rounded ${
                 selectedMembers.length === 0
                   ? "opacity-50 cursor-not-allowed"
                   : ""
               }`}
               disabled={selectedMembers.length === 0}
-              onClick={onDelete}
+              onClick={() => onDelete()}
             >
               Delete Selected
             </button>
@@ -182,7 +199,7 @@ const Table: React.FC = () => {
                     Name
                   </span>
                   {sortBy === "name" && (
-                    <span className="ml-1">
+                    <span className="ml-2 text-gray-500">
                       {sortOrder === "asc" ? (
                         <i className="fas fa-arrow-up"></i>
                       ) : (
@@ -226,7 +243,7 @@ const Table: React.FC = () => {
                     member={member}
                     selected={selectedMembers?.includes(member.id)}
                     onSelect={handleSelectMember}
-                    onDelete={() => onDelete(member?.id)}
+                    onSingleDelete={() => onSingleDelete(member.id)}
                     onEdit={() => onEdit(member)}
                   />
                 ))
@@ -239,6 +256,7 @@ const Table: React.FC = () => {
           totalPages={totalPages}
           onPrevious={handlePreviousPage}
           onNext={handleNextPage}
+          onPageSelect={handlePageSelect}
         />
       </div>
 
@@ -262,11 +280,15 @@ const Table: React.FC = () => {
       {showEditSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
-            <div className="flex flex-col items-left">
-              <span className="text-green-600 text-3xl mb-4">
-                <i className="fa-solid fa-circle-check"></i>
+            <div className="flex flex-col items-start">
+              <div className="bg-green-100 rounded-full p-2 flex items-center justify-center">
+                <div className="bg-green-200 rounded-full p-2 flex items-center justify-center">
+                  <i className="fa-regular fa-circle-check text-green-600 text-2xl"></i>
+                </div>
+              </div>
+              <span className="text-lg font-normal mt-4">
+                User Details Changed!
               </span>
-              <span className="text-lg font-normal">User Details Changed!</span>
             </div>
           </div>
         </div>
@@ -299,12 +321,31 @@ const Table: React.FC = () => {
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
-            <div className="flex flex-col items-left">
-              <span className="text-green-600 text-3xl mb-4">
-                <i className="fa-solid fa-circle-check"></i>
-              </span>
-              <span className="text-lg font-normal">
+            <div className="flex flex-col items-start">
+              <div className="bg-green-100 rounded-full p-2 flex items-center justify-center">
+                <div className="bg-green-200 rounded-full p-2 flex items-center justify-center">
+                  <i className="fa-regular fa-circle-check text-green-600 text-2xl"></i>
+                </div>
+              </div>
+              <span className="text-lg font-normal mt-4">
                 Users successfully deleted!
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showErrorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
+            <div className="flex flex-col items-start">
+              <div className="bg-red-100 rounded-full p-2 flex items-center justify-center">
+                <div className="bg-red-200 rounded-full p-2 flex items-center justify-center">
+                  <i className="fa-regular fa-circle-xmark text-red-600 text-2xl"></i>
+                </div>
+              </div>
+              <span className="text-lg font-normal mt-4">
+                Something went wrong!
               </span>
             </div>
           </div>
