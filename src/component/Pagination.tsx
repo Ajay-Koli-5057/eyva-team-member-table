@@ -51,12 +51,11 @@ const Pagination: React.FC<PaginationProps> = ({
     }
     return pageNumbers;
   };
-
   return (
-    <div className="p-4 border-t flex justify-between items-center">
+    <div className="p-4 border-t flex flex-col sm:flex-row justify-between items-center space-y-2">
       <button
         onClick={onPrevious}
-        className={`bg-white border border-black text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 hover:border-none ${
+        className={`bg-white border border-black text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 hover:border-none mb-2 sm:mb-0 ${
           currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={currentPage === 1}
@@ -66,7 +65,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </span>
         Previous
       </button>
-      <div className="flex space-x-2">
+      <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
         {getPageNumbers().map((page, index) =>
           page === "..." ? (
             <span key={index} className="px-2 py-1 text-gray-800">

@@ -1,9 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import CustomSelect from "../common/CustomSelect";
+import Spinner from "../common/Spinner";
 
 interface EditUserFormProps {
   selectedMember: TeamMember | null;
+  isLoading: boolean;
   onSubmit: (data: any) => void;
   onCancel: () => void;
 }
@@ -21,6 +23,7 @@ interface TeamMember {
 
 const EditUserForm: React.FC<EditUserFormProps> = ({
   selectedMember,
+  isLoading,
   onSubmit,
   onCancel,
 }) => {
@@ -88,16 +91,18 @@ const EditUserForm: React.FC<EditUserFormProps> = ({
       <div className="flex justify-evenly space-x-4">
         <button
           type="button"
-          className="px-4 py-2 w-full rounded bg-gray-200 rounded-lg hover:bg-gray-300"
+          className="px-4 py-2 w-full rounded bg-white border border-black rounded-lg hover:bg-gray-300 hover:border-none"
           onClick={onCancel}
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 w-full rounded bg-purple-600 rounded-lg text-white hover:bg-purple-700"
+          className={`px-4 py-2 w-full rounded bg-purple-600 rounded-lg text-white hover:bg-purple-700 ${
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
-          Confirm
+          {isLoading ? <Spinner height={4} width={4} /> : "Confirm"}
         </button>
       </div>
     </form>

@@ -3,6 +3,8 @@ import Checkbox from "../common/CustomCheckbox";
 import TeamMemberRow from "./TeamMemberRow";
 import EditUserForm from "./EditUserForm";
 import Pagination from "./Pagination";
+import CustomModal from "../common/CustomModal";
+import Spinner from "../common/Spinner";
 import { TeamMember } from "../types/types";
 import {
   deleteMembers,
@@ -21,6 +23,7 @@ const Table: React.FC = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKey, setSearchKey] = useState<any | null>(null);
@@ -115,19 +118,25 @@ const Table: React.FC = () => {
 
   const handleFormSubmit = async (data: any) => {
     try {
+      setConfirmLoading(true);
       await updateMemberDetails(data.id, data);
       setShowEditModal(false);
       setShowEditSuccessModal(true);
       setTimeout(() => setShowEditSuccessModal(false), 2000);
+      fetchData();
     } catch (error) {
       console.error("Error updating user details:", error);
-      setShowErrorModal(true);
       setShowEditModal(false);
+      setShowErrorModal(true);
+      setTimeout(() => setShowErrorModal(false), 2000);
+    } finally {
+      setConfirmLoading(false);
     }
   };
 
   const onDeleteSelected = async () => {
     try {
+      setConfirmLoading(true);
       await deleteMembers(selectedMembers);
       const updatedMembers = teamMembersList.filter(
         (member) => !selectedMembers?.includes(member.id)
@@ -142,6 +151,9 @@ const Table: React.FC = () => {
       setSelectedMembers([]);
       setShowConfirmModal(false);
       setShowErrorModal(true);
+      setTimeout(() => setShowErrorModal(false), 2000);
+    } finally {
+      setConfirmLoading(false);
     }
   };
 
@@ -151,20 +163,18 @@ const Table: React.FC = () => {
         <h1 className="text-xl font-bold">Team Settings</h1>
       </div>
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <div className="p-4 border-b flex justify-between items-center">
-          <h2 className="text-lg font-semibold">
+        <div className="p-4 border-b flex flex-col sm:flex-row justify-between items-center">
+          <h2 className="text-lg font-semibold mb-4 sm:mb-0">
             Team Members
-            <span
-              className={`bg-purple-100 text-purple-800 py-1 px-3 mx-4 rounded-full text-xs mr-1`}
-            >
+            <span className="bg-purple-100 text-purple-800 py-1 px-3 mx-4 rounded-full text-xs">
               {`${totalMemberList} users`}
             </span>
           </h2>
 
-          <div className="flex w-half space-x-5">
+          <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-4 sm:space-y-0 sm:space-x-5">
             <input
               type="text"
-              className={`p-2 border border-gray-400 rounded-lg hover:border-purple-500 focus:outline-none`}
+              className="p-2 border border-gray-400 rounded-lg hover:border-purple-500 focus:outline-none w-full sm:w-auto"
               placeholder="Search..."
               onChange={(e) => setSearchKey(e.target.value)}
             />
@@ -181,6 +191,7 @@ const Table: React.FC = () => {
             </button>
           </div>
         </div>
+
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
@@ -227,7 +238,7 @@ const Table: React.FC = () => {
               {loading ? (
                 <tr>
                   <td colSpan={8} className="text-center py-4 w-full">
-                    ...Loading
+                    <Spinner height={10} width={10} />
                   </td>
                 </tr>
               ) : teamMembersList.length === 0 ? (
@@ -267,6 +278,7 @@ const Table: React.FC = () => {
             <h2 className="text-xl font-normal mb-5">Edit User Details</h2>
             <EditUserForm
               selectedMember={selectedMember}
+              isLoading={confirmLoading}
               onSubmit={(data: any) => {
                 setSelectedMember(data);
                 handleFormSubmit(data);
@@ -278,20 +290,7 @@ const Table: React.FC = () => {
       )}
 
       {showEditSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
-            <div className="flex flex-col items-start">
-              <div className="bg-green-100 rounded-full p-2 flex items-center justify-center">
-                <div className="bg-green-200 rounded-full p-2 flex items-center justify-center">
-                  <i className="fa-regular fa-circle-check text-green-600 text-2xl"></i>
-                </div>
-              </div>
-              <span className="text-lg font-normal mt-4">
-                User Details Changed!
-              </span>
-            </div>
-          </div>
-        </div>
+        <CustomModal message={"User Details Changed!"} type={"success"} />
       )}
 
       {showConfirmModal && (
@@ -308,10 +307,12 @@ const Table: React.FC = () => {
                 Cancel
               </button>
               <button
-                className="px-4 py-2 w-full rounded bg-purple-600 rounded-lg text-white hover:bg-purple-700"
+                className={`px-4 py-2 w-full rounded bg-purple-600 rounded-lg text-white hover:bg-purple-700 ${
+                  confirmLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
                 onClick={onDeleteSelected}
               >
-                Confirm
+                {confirmLoading ? <Spinner height={4} width={4} /> : "Confirm"}
               </button>
             </div>
           </div>
@@ -319,37 +320,11 @@ const Table: React.FC = () => {
       )}
 
       {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
-            <div className="flex flex-col items-start">
-              <div className="bg-green-100 rounded-full p-2 flex items-center justify-center">
-                <div className="bg-green-200 rounded-full p-2 flex items-center justify-center">
-                  <i className="fa-regular fa-circle-check text-green-600 text-2xl"></i>
-                </div>
-              </div>
-              <span className="text-lg font-normal mt-4">
-                Users successfully deleted!
-              </span>
-            </div>
-          </div>
-        </div>
+        <CustomModal message={"Users successfully deleted!"} type={"success"} />
       )}
 
       {showErrorModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg sm:w-2/3 md:w-1/2 lg:w-1/3">
-            <div className="flex flex-col items-start">
-              <div className="bg-red-100 rounded-full p-2 flex items-center justify-center">
-                <div className="bg-red-200 rounded-full p-2 flex items-center justify-center">
-                  <i className="fa-regular fa-circle-xmark text-red-600 text-2xl"></i>
-                </div>
-              </div>
-              <span className="text-lg font-normal mt-4">
-                Something went wrong!
-              </span>
-            </div>
-          </div>
-        </div>
+        <CustomModal message={"Something went wrong!"} type={"error"} />
       )}
     </div>
   );
